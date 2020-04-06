@@ -6,15 +6,18 @@ import login from '@/views/login.vue';
 import VueRouter from "vue-router";
 // 注册路由
 Vue.use(VueRouter);
-// 创建实例化路由对象
-const router = new VueRouter({
+// 创建 并 导出 实例化路由对象
+export default new VueRouter({
     routes: [
+        // 重定向登入页
         {
-            // 登陆页
             path: '/',
+            redirect: '/login'
+        },
+        // 登入页
+        {
+            path: '/login',
             component: login
         }
     ]
 });
-// 导入路由对象
-export default router;
