@@ -9,37 +9,40 @@
         <span class="user">用户登陆</span>
       </div>
       <!-- 登入页输入表单 -->
-      <el-form label-width="0px" class="loginForm" v-model="form">
+      <el-form label-width="0px" class="loginForm" :rules="rules" ref="ruleForm" :model="ruleForm">
         <!-- 用户名 -->
-        <el-form-item>
-          <el-input prefix-icon="el-icon-user-solid" v-model="form.userName"></el-input>
+        <el-form-item prop="userName">
+          <el-input prefix-icon="el-icon-user-solid" v-model="ruleForm.userName"></el-input>
         </el-form-item>
         <!-- 密码输入框 -->
-        <el-form-item>
-          <el-input prefix-icon="el-icon-lock" show-password></el-input>
+        <el-form-item prop="password">
+          <el-input prefix-icon="el-icon-lock" show-password v-model="ruleForm.password"></el-input>
         </el-form-item>
         <!-- 验证码 -->
-        <el-form-item>
+        <el-form-item prop="key">
           <el-row>
             <el-col :span="18">
-              <el-input placeholder="请输入验证码" prefix-icon="el-icon-key"></el-input>
+              <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="ruleForm.key"></el-input>
             </el-col>
             <el-col :span="6">
-              <span></span>
+              <img src="@/assets/img/key.jpg" class="comple" alt />
             </el-col>
           </el-row>
         </el-form-item>
         <!-- 协议书 -->
-        <el-checkbox v-model="checked">
-          我已阅读并同意
-          <el-link type="primary">用户协议</el-link>和
-          <el-link type="primary">隐私政策</el-link>
-        </el-checkbox>
+        <el-form-item>
+          <el-checkbox v-model="ruleForm.checked">
+            我已阅读并同意
+            <el-link type="primary">用户协议</el-link>和
+            <el-link type="primary">隐私政策</el-link>
+          </el-checkbox>
+        </el-form-item>
         <!-- 登入按钮 -->
-        <el-button size="medium" class="enter">登录</el-button>
+        <el-button size="medium" class="enter" @click="click">登录</el-button>
         <!-- 注册按钮 -->
         <el-button size="medium" class="sing">注册</el-button>
       </el-form>
+      <!-- 注册表单 -->
     </div>
     <div class="right">
       <img src="@/assets/img/login_banner_ele.png" alt />
@@ -51,10 +54,42 @@
 export default {
   data() {
     return {
-      form: {
-        userName: ""
+      ruleForm: {
+        // 用户名
+        userName: "",
+        // 密码
+        password: "",
+        // 验证码
+        key: "",
+        // 复选框
+        checked: ""
+      },
+      rules: {
+        // 用户名校验
+        userName: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 3, max: 6, message: "长度在 3 到 6 个字符", trigger: "blur" }
+        ],
+        // 密码校验
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 8, message: "字符在 6 到 8 个字符", trigger: "blur" }
+        ],
+        // 验证码校验
+        key: [
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "长度为 4 的字符", trigger: "blur" }
+        ]
       }
     };
+  },
+  methods: {
+    click() {
+      // validate 校验整个表单数据
+      this.$refs.ruleForm.validate(res => {
+        this.$message.success(res + "");
+      });
+    }
   }
 };
 </script>
@@ -109,6 +144,11 @@ export default {
       margin-top: 28px;
       color: #fff;
       margin-left: 0px;
+    }
+
+    .comple {
+      width: 100%;
+      height: 40px;
     }
   }
 }
