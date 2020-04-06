@@ -40,18 +40,27 @@
         <!-- 登入按钮 -->
         <el-button size="medium" class="enter" @click="click">登录</el-button>
         <!-- 注册按钮 -->
-        <el-button size="medium" class="sing">注册</el-button>
+        <el-button size="medium" class="sing" @click="sing">注册</el-button>
       </el-form>
       <!-- 注册表单 -->
     </div>
     <div class="right">
       <img src="@/assets/img/login_banner_ele.png" alt />
     </div>
+
+    <!-- 使用组件 -->
+    <register ref="register"></register>
   </div>
 </template>
 
 <script>
+// 导入子组件
+import register from "@/views/register.vue";
 export default {
+  // 注册子组件
+  components: {
+    register
+  },
   data() {
     return {
       ruleForm: {
@@ -89,12 +98,15 @@ export default {
       this.$refs.ruleForm.validate(res => {
         this.$message.success(res + "");
       });
+    },
+    sing() {
+      this.$refs.register.showRegiter = true;
     }
   }
 };
 </script>
 
-<style lang="less">
+<style lang="less" scope>
 .login {
   display: flex;
   height: 100%;
