@@ -43,7 +43,7 @@
             <el-input placeholder="请输入密码" v-model="form.code" show></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-            <img src="@/assets/img/yanzhengma.png" alt />
+            <img :src="codeUrl" alt class="codeImg" @click="getCodeUrl" />
           </el-col>
         </el-row>
       </el-form-item>
@@ -54,7 +54,7 @@
             <el-input placeholder="请输入验证码" v-model="form.rcode" show></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-            <el-button>获取验证码</el-button>
+            <el-button @click="getRcode">获取验证码</el-button>
           </el-col>
         </el-row>
       </el-form-item>
@@ -67,6 +67,8 @@
   </el-dialog>
 </template>
 <script>
+// 导入获取短信api
+import rcodeClick from "@/api/register.js";
 export default {
   data() {
     return {
@@ -76,6 +78,8 @@ export default {
       imageUrl: "",
       // 基地址
       baseUrl: process.env.VUE_APP_URL,
+      // 图形验证码地址
+      codeUrl: process.env.VUE_APP_URL + "/captcha?type=sendsms",
       // 表单校验对象
       form: {
         // 头像地址
@@ -182,6 +186,26 @@ export default {
     // 表单提交按钮事件 校验全局表单内容
     submit() {
       this.$refs.form.validate();
+    },
+    // 图形码地址获取
+    getCodeUrl() {
+      this.codeUrl =
+        process.env.VUE_APP_URL + "/captcha?type=sendsms&t=" + Date.now();
+    },
+    // 获取短信验证码 并 对某些输入框进行校验
+    getRcode() {
+      // 对手机and图形码进行校验
+      let _data = true;
+      this.$refs.form.validateField(["code", "phone"], error => {
+        if (error != "") {
+          _data = false;
+        }
+      });
+      if (_data === false) {
+        return;
+      } else {
+        rcodeClick({ code: this.form.code, phone: this.form.phone });
+      }
     }
   }
 };
@@ -224,7 +248,11 @@ export default {
     height: 178px;
     display: block;
   }
-
+  .codeImg {
+    width: 100%;
+    height: 40px;
+    border: 1px dashed #000;
+  }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none !important;

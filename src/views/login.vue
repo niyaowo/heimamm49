@@ -96,7 +96,7 @@ export default {
     click() {
       // validate 校验整个表单数据
       this.$refs.ruleForm.validate(res => {
-        this.$message.success(res + "");
+        this.$message.error(res + "");
       });
     },
     sing() {
