@@ -21,8 +21,8 @@
         </el-upload>
       </el-form-item>
       <!-- 昵称 -->
-      <el-form-item label="昵称" prop="userName">
-        <el-input placeholder="请输入用户名" v-model="form.userName" clearable></el-input>
+      <el-form-item label="昵称" prop="username">
+        <el-input placeholder="请输入用户名" v-model="form.username" clearable></el-input>
       </el-form-item>
       <!-- 邮箱 -->
       <el-form-item label="邮箱" prop="email">
@@ -33,8 +33,8 @@
         <el-input placeholder="请输入手机号" v-model="form.phone" type="number"></el-input>
       </el-form-item>
       <!-- 密码 -->
-      <el-form-item label="密码" prop="passworld">
-        <el-input placeholder="请输入密码" v-model="form.passworld" :show-password="true"></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input placeholder="请输入密码" v-model="form.password" :show-password="true"></el-input>
       </el-form-item>
       <!-- 图形码 -->
       <el-form-item label="图形码" prop="code">
@@ -54,7 +54,10 @@
             <el-input placeholder="请输入验证码" v-model="form.rcode" show></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-            <el-button @click="getRcode">获取验证码</el-button>
+            <el-button @click="getRcode" :disabled="totalTime!=60">
+              获取验证码
+              <span v-if="totalTime!=60">{{totalTime}}</span>
+            </el-button>
           </el-col>
         </el-row>
       </el-form-item>
@@ -62,13 +65,13 @@
 
     <span slot="footer" class="dialog-footer">
       <el-button @click="showRegiter = false">取 消</el-button>
-      <el-button type="primary" @click="submit">确 定</el-button>
+      <el-button type="primary" @click="registerClick">确 定</el-button>
     </span>
   </el-dialog>
 </template>
 <script>
 // 导入获取短信api
-import rcodeClick from "@/api/register.js";
+import { getPhoneCode, register } from "@/api/register.js";
 export default {
   data() {
     return {
@@ -80,18 +83,20 @@ export default {
       baseUrl: process.env.VUE_APP_URL,
       // 图形验证码地址
       codeUrl: process.env.VUE_APP_URL + "/captcha?type=sendsms",
+      // 倒计时时间
+      totalTime: 60,
       // 表单校验对象
       form: {
         // 头像地址
         avatar: "",
         // 用户名称
-        userName: "",
+        username: "",
         // 邮箱
         email: "",
         // 手机号
         phone: "",
         // 密码
-        passworld: "",
+        password: "",
         // 图形码地址
         code: "",
         // 验证码
@@ -102,7 +107,7 @@ export default {
         // 头像校验
         avatar: [{ required: true, message: "请上传头像", trigger: "change" }],
         // 用户名校验
-        userName: [
+        username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           { min: 3, max: 6, message: "字符在3~6个字段哦", trigger: "blur" }
         ],
@@ -139,7 +144,7 @@ export default {
           }
         ],
         // 密码校验
-        passworld: [
+        password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           { min: 6, max: 12, message: "请输入正确的密码", trigger: "blur" }
         ],
@@ -156,7 +161,17 @@ export default {
       }
     };
   },
-
+  // 监听数据
+  watch: {
+    showRegiter(newval) {
+      if (newval == false) {
+        // 清空表单
+        this.$refs.form.resetFields();
+        // 图片清空
+        this.imageUrl = "";
+      }
+    }
+  },
   methods: {
     handleAvatarSuccess(res, file) {
       // 图片地址/路径
@@ -183,10 +198,6 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    // 表单提交按钮事件 校验全局表单内容
-    submit() {
-      this.$refs.form.validate();
-    },
     // 图形码地址获取
     getCodeUrl() {
       this.codeUrl =
@@ -204,8 +215,42 @@ export default {
       if (_data === false) {
         return;
       } else {
-        rcodeClick({ code: this.form.code, phone: this.form.phone });
+        // 这里是接受验证码
+        // 发送验证码进行倒计时 及 取消点击
+        this.totalTime--;
+        let _setTime = setInterval(() => {
+          this.totalTime--;
+          if (this.totalTime <= 0) {
+            // 还原时间
+            this.totalTime = 60;
+            // 清除定时器
+            clearInterval(_setTime);
+          }
+        }, 1000);
+        getPhoneCode({ code: this.form.code, phone: this.form.phone }).then(
+          res => {
+            //成功回调
+            window.console.log(res);
+            this.$message.success(res.data.data.captcha + "");
+          }
+        );
       }
+    },
+    // 用户注册点击事件
+    registerClick() {
+      // 对整个表单进行验证
+      this.$refs.form.validate(res => {
+        if (res) {
+          // 表单验证通过
+          register(this.form).then(res => {
+            if (res.code == 200) {
+              this.$message.success("注册成功");
+              // 关闭弹窗/注册页面
+              this.showRegiter = false;
+            }
+          });
+        }
+      });
     }
   }
 };
