@@ -11,27 +11,27 @@
       <!-- 登入页输入表单 -->
       <el-form label-width="0px" class="loginForm" :rules="rules" ref="ruleForm" :model="ruleForm">
         <!-- 用户名 -->
-        <el-form-item prop="userName">
-          <el-input prefix-icon="el-icon-user-solid" v-model="ruleForm.userName"></el-input>
+        <el-form-item prop="phone">
+          <el-input prefix-icon="el-icon-user-solid" v-model="ruleForm.phone"></el-input>
         </el-form-item>
         <!-- 密码输入框 -->
         <el-form-item prop="password">
           <el-input prefix-icon="el-icon-lock" show-password v-model="ruleForm.password"></el-input>
         </el-form-item>
         <!-- 验证码 -->
-        <el-form-item prop="key">
+        <el-form-item prop="code">
           <el-row>
-            <el-col :span="18">
-              <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="ruleForm.key"></el-input>
+            <el-col :span="16">
+              <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="ruleForm.code"></el-input>
             </el-col>
-            <el-col :span="6">
-              <img src="@/assets/img/key.jpg" class="comple" alt />
+            <el-col :span="7" :offset="1">
+              <img :src="code" class="comple" @click="getCode" alt />
             </el-col>
           </el-row>
         </el-form-item>
         <!-- 协议书 -->
-        <el-form-item>
-          <el-checkbox v-model="ruleForm.checked">
+        <el-form-item prop="isCheck">
+          <el-checkbox v-model="ruleForm.isCheck">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
             <el-link type="primary">隐私政策</el-link>
@@ -55,7 +55,12 @@
 
 <script>
 // 导入子组件
-import register from "@/views/register.vue";
+import register from "@/views/login/register.vue";
+// 导入登入请求API
+import { toLogin } from "@/api/toLogin.js";
+// 保存token
+import { saveToken } from "@/utils/token.js";
+
 export default {
   // 注册子组件
   components: {
@@ -63,21 +68,36 @@ export default {
   },
   data() {
     return {
+      // 登陆验证码
+      code: process.env.VUE_APP_URL + "/captcha?type=login",
+
       ruleForm: {
         // 用户名
-        userName: "",
+        phone: "",
         // 密码
         password: "",
         // 验证码
-        key: "",
+        code: "",
         // 复选框
-        checked: ""
+        isCheck: ""
       },
       rules: {
         // 用户名校验
-        userName: [
+        phone: [
           { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 6, message: "长度在 3 到 6 个字符", trigger: "blur" }
+          {
+            min: 11,
+            max: 11,
+            validator: (rule, value, callback) => {
+              let _reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+              if (_reg.test(value)) {
+                callback();
+              } else {
+                callback("请正确输入手机");
+              }
+            },
+            trigger: "blur"
+          }
         ],
         // 密码校验
         password: [
@@ -85,9 +105,23 @@ export default {
           { min: 6, max: 8, message: "字符在 6 到 8 个字符", trigger: "blur" }
         ],
         // 验证码校验
-        key: [
+        code: [
           { required: true, message: "请输入验证码", trigger: "blur" },
           { min: 4, max: 4, message: "长度为 4 的字符", trigger: "blur" }
+        ],
+        // 复选框校验
+        isCheck: [
+          { required: true, message: "请勾选协议", trigger: "change" },
+          {
+            validator: (relu, value, callback) => {
+              if (value == true) {
+                callback();
+              } else {
+                callback("请勾选协议");
+              }
+            },
+            trigger: "change"
+          }
         ]
       }
     };
@@ -96,11 +130,29 @@ export default {
     click() {
       // validate 校验整个表单数据
       this.$refs.ruleForm.validate(res => {
-        this.$message.error(res + "");
+        if (res == true) {
+          // 发送请求
+          toLogin(this.ruleForm).then(res => {
+            console.log(res);
+            if (res.code == 200) {
+              // 登入成功提示
+              this.$message.success("登入成功!");
+              // 保存token
+              saveToken(res.data.token);
+              // this.$routor.push("/home");
+            }
+          });
+        }
       });
     },
+    // 注册页显示
     sing() {
       this.$refs.register.showRegiter = true;
+    },
+    // 获取验证码
+    getCode() {
+      this.code =
+        process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
     }
   }
 };
@@ -161,6 +213,7 @@ export default {
     .comple {
       width: 100%;
       height: 40px;
+      border: 1px dashed #ddd;
     }
   }
 }

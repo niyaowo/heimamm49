@@ -230,8 +230,7 @@ export default {
         getPhoneCode({ code: this.form.code, phone: this.form.phone }).then(
           res => {
             //成功回调
-            window.console.log(res);
-            this.$message.success(res.data.data.captcha + "");
+            this.$message.success(res.data.captcha + "");
           }
         );
       }

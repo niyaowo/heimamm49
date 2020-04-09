@@ -1,7 +1,8 @@
 // 导入Vue
 import Vue from 'vue'
 // 导入子组件
-import login from '@/views/login.vue';
+import login from '@/views/login/login.vue';
+import layout from '@/views/home/layout.vue';
 // 导入路由
 import VueRouter from "vue-router";
 // 注册路由
@@ -18,6 +19,11 @@ export default new VueRouter({
         {
             path: '/login',
             component: login
+        },
+        // 首页
+        {
+            path: '/home',
+            component: layout
         }
     ]
 });
