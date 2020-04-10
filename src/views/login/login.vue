@@ -156,7 +156,7 @@ export default {
     }
   },
   created() {
-    if (!getToken()) {
+    if (getToken()) {
       this.$router.push("/home");
     }
   }
