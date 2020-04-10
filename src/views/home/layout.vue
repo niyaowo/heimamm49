@@ -9,7 +9,7 @@
       <div class="right">
         <img :src="userInfo.avatar" class="userImg" alt />
         <span class="userName">{{userInfo.phone}}</span>
-        <button class="btn">退出</button>
+        <button class="btn" @click="loginOut">退出</button>
       </div>
     </el-header>
     <el-container>
@@ -22,6 +22,7 @@
 <script>
 // 导入获取用户详情 api接口
 import { getUserInfo } from "@/api/home.js";
+import { getToken } from "@/utils/token.js";
 export default {
   data() {
     return {
@@ -29,8 +30,26 @@ export default {
       userInfo: ""
     };
   },
+  methods: {
+    loginOut() {
+      this.$confirm("确定退出吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$message({
+          type: "success",
+          message: "退出成功!"
+        });
+      });
+    }
+  },
   // 创建实例化vue对象执行
   created() {
+    if (!getToken()) {
+      this.$router.push("/");
+      return;
+    }
     getUserInfo().then(res => {
       console.log(res);
       this.userInfo = res.data;

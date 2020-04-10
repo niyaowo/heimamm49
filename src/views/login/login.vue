@@ -59,7 +59,7 @@ import register from "@/views/login/register.vue";
 // 导入登入请求API
 import { toLogin } from "@/api/toLogin.js";
 // 保存token
-import { saveToken } from "@/utils/token.js";
+import { saveToken, getToken } from "@/utils/token.js";
 
 export default {
   // 注册子组件
@@ -139,7 +139,7 @@ export default {
               this.$message.success("登入成功!");
               // 保存token
               saveToken(res.data.token);
-              // this.$routor.push("/home");
+              this.$router.push("/home");
             }
           });
         }
@@ -153,6 +153,11 @@ export default {
     getCode() {
       this.code =
         process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
+    }
+  },
+  created() {
+    if (!getToken()) {
+      this.$router.push("/home");
     }
   }
 };

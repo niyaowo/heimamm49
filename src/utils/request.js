@@ -3,7 +3,9 @@
 import axios from 'axios'
 import { Message } from 'element-ui';
 // 导入token值
-import { getToken } from './token.js'
+import { getToken, removeToken } from './token.js';
+// 导入路由
+import router from '@/router/router.js'
 // 创建axios 副本
 const instance = axios.create({
     // 携带基地址
@@ -30,6 +32,12 @@ instance.interceptors.response.use(function (response) {
     // 对响应数据做点什么
     if (response.data.code == 200) {
         return response.data;
+    } else if (response.data.code == 206) {
+        // token 报错处理  删除token 返回登录页
+        Message.error(response.data.message);
+        router.push('/');
+        removeToken();
+        return Promise.reject("error");
     } else {
         Message.error(response.data.message);
         return Promise.reject("error");

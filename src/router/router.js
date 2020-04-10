@@ -8,12 +8,12 @@ import VueRouter from "vue-router";
 // 注册路由
 Vue.use(VueRouter);
 // 创建 并 导出 实例化路由对象
-export default new VueRouter({
+const router = new VueRouter({
     routes: [
         // 重定向登入页
         {
             path: '/',
-            redirect: '/login'
+            component: login
         },
         // 登入页
         {
@@ -22,8 +22,9 @@ export default new VueRouter({
         },
         // 首页
         {
-            path: '/home',
+            path: "/home",
             component: layout
         }
     ]
 });
+export default router;
