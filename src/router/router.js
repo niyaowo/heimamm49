@@ -8,6 +8,11 @@ import userList from '@/views/home/userList/userList.vue';
 import question from '@/views/home/question/question.vue';
 import business from '@/views/home/business/business.vue';
 import subject from '@/views/home/subject/subject.vue';
+
+// 导入进度条插件
+// import NProgress from 'nprogress';
+// import 'nprogress/nprogress.css'
+
 // 导入路由
 import VueRouter from "vue-router";
 // 注册路由
@@ -28,8 +33,10 @@ const router = new VueRouter({
         // 首页
         {
             path: "/home",
+            // 进入home 首页将子路由重定向  默认路径
+            redirect: "/home/subject",
             component: layout,
-            // 嵌套子路由、
+            // 嵌套子路由
             children: [
                 {
                     path: 'chart',
@@ -55,4 +62,11 @@ const router = new VueRouter({
         }
     ]
 });
+// router.beforeEach((next) => {
+//     NProgress.start();
+//     next()
+// })
+// router.afterEach(() => {
+//     NProgress.done()
+// })
 export default router;
