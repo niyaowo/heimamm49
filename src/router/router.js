@@ -38,6 +38,7 @@ const router = new VueRouter({
             // 进入home 首页将子路由重定向  默认路径
             redirect: "/home/subject",
             component: layout,
+            // 网页元信息
             meta: {
                 title: "首页",
             },
@@ -84,14 +85,17 @@ const router = new VueRouter({
 })
 
 // 导入进度条插件
-// import NProgress from 'nprogress';
-// import 'nprogress/nprogress.css'
-// router.beforeEach(next => {
-//     NProgress.start();
-//     next()
-// })
-// router.afterEach((to) => {
-//     NProgress.done()
-//     document.title = to.meta.title;
-// })
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css'
+router.beforeEach((to, from, next) => {
+    // 进入前开始进度条动画
+    NProgress.start();
+    next()
+})
+router.afterEach((to) => {
+    // 进入后/页面加载完毕 进度条动画结束
+    NProgress.done()
+    // 修改网页标题
+    document.title = to.meta.title;
+})
 export default router;
