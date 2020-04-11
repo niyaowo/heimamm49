@@ -6,12 +6,14 @@
         <img src="@/assets/img/indexLogin.png" class="img" alt />
         <span class="txt">黑马梅梅</span>
       </div>
+      <!-- 用户详情 及 退出 -->
       <div class="right">
-        <img :src="userInfo.avatar" class="userImg" alt />
-        <span class="userName">{{userInfo.phone}}</span>
+        <img :src="$store.state.userInfo.avatar" class="userImg" alt />
+        <span class="userName">{{$store.state.userInfo.phone}}</span>
         <button class="btn" @click="loginOut">退出</button>
       </div>
     </el-header>
+    <!-- 导航栏 -->
     <el-container>
       <el-aside class="aside" width="auto">
         <el-menu
@@ -83,11 +85,14 @@ export default {
       this.$router.push("/");
       return;
     }
+    // 修改网页标题
+    document.title = this.$route.meta.title;
     getUserInfo().then(res => {
-      console.log(res);
       this.userInfo = res.data;
       // 用户图片头像
       res.data.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
+      // 将数据保存到数据共享 Vuex
+      this.$store.state.userInfo = this.userInfo;
     });
   }
 };
