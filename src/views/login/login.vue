@@ -96,13 +96,13 @@ export default {
                 callback("请正确输入手机");
               }
             },
-            trigger: "blur"
+            trigger: "change"
           }
         ],
         // 密码校验
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6, max: 8, message: "字符在 6 到 8 个字符", trigger: "blur" }
+          { min: 6, max: 8, message: "字符在 6 到 8 个字符", trigger: "change" }
         ],
         // 验证码校验
         code: [
