@@ -30,24 +30,24 @@
     </el-card>
     <el-card class="table">
       <!-- 表格数据 -->
-      <el-table :data="subjectList">
+      <el-table :data="subjectList" style="width: 100%">
         <!-- 自定义表格 占位符 slot-scope="scope":声明私有变量 $当前的下标 row整行的数据 -->
-        <el-table-column label="序号" width="60px">
+        <el-table-column label="序号" width="120">
           <template slot-scope="scope">{{(pagination.cPage-1)*pagination.pageSize+scope.$index+1}}</template>
         </el-table-column>
-        <el-table-column prop="rid" label="学科编号" width="190px"></el-table-column>
-        <el-table-column prop="name" label="学科名称" width="190px"></el-table-column>
-        <el-table-column prop="short_name" label="简称" width="190px"></el-table-column>
-        <el-table-column prop="username" label="创建者" width="190px"></el-table-column>
-        <el-table-column prop="update_time" label="创建日期" width="190px"></el-table-column>
-        <el-table-column label="状态" width="140px">
+        <el-table-column prop="rid" label="学科编号" width="180"></el-table-column>
+        <el-table-column prop="name" label="学科名称"></el-table-column>
+        <el-table-column prop="short_name" label="简称"></el-table-column>
+        <el-table-column prop="username" label="创建者"></el-table-column>
+        <el-table-column prop="update_time" label="创建日期" width="180"></el-table-column>
+        <el-table-column label="状态" width="130">
           <template slot-scope="scope">{{scope.row.status==1?"启用":"禁用"}}</template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" @click="editData(scope.row)">编辑</el-button>
-            <el-button size="mini" @click="setStatus(scope.row.id)">禁用</el-button>
-            <el-button size="mini" type="danger" @click="removeData(scope.row.id)">删除</el-button>
+            <el-button type="primary" @click="editData(scope.row)">编辑</el-button>
+            <el-button @click="setStatus(scope.row.id)">{{scope.row.status==0?"启用":"禁用"}}</el-button>
+            <el-button type="danger" @click="removeData(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

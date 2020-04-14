@@ -71,6 +71,17 @@ export default {
           intro: "",
           remark: ""
         };
+      } else {
+        this.$nextTick(() => {
+          this.$refs.form.clearValidate(); // 清空表单
+          // this.form = {
+          //   rid: "",
+          //   name: "",
+          //   short_name: "",
+          //   intro: "",
+          //   remark: ""
+          // };
+        });
       }
     }
   },
