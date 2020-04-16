@@ -22,6 +22,7 @@ const router = new VueRouter({
             component: login,
             meta: {
                 title: "登入页",
+                rules: ["超级管理员", "管理员", "老师", "学生"]
             }
         },
         // 登入页
@@ -30,6 +31,7 @@ const router = new VueRouter({
             component: login,
             meta: {
                 title: "登入页",
+                rules: ["超级管理员", "管理员", "老师", "学生"]
             }
         },
         // 首页
@@ -41,6 +43,7 @@ const router = new VueRouter({
             // 网页元信息
             meta: {
                 title: "首页",
+                rules: ["超级管理员", "管理员", "老师", "学生"]
             },
             // 嵌套子路由
             children: [
@@ -49,6 +52,8 @@ const router = new VueRouter({
                     component: chart,
                     meta: {
                         title: "数据概览",
+                        rules: ["超级管理员", "管理员", "老师"],
+                        icon: "el-icon-pie-chart"
                     }
                 },
                 {
@@ -56,6 +61,8 @@ const router = new VueRouter({
                     component: userList,
                     meta: {
                         title: "用户列表",
+                        rules: ["超级管理员", "管理员"],
+                        icon: "el-icon-user"
                     }
                 },
                 {
@@ -63,6 +70,8 @@ const router = new VueRouter({
                     component: question,
                     meta: {
                         title: "题库列表",
+                        rules: ["超级管理员", "管理员", "老师"],
+                        icon: "el-icon-edit-outline"
                     }
                 },
                 {
@@ -70,6 +79,8 @@ const router = new VueRouter({
                     component: business,
                     meta: {
                         title: "企业列表",
+                        rules: ["超级管理员", "管理员", "老师"],
+                        icon: "el-icon-office-building"
                     }
                 },
                 {
@@ -77,6 +88,8 @@ const router = new VueRouter({
                     component: subject,
                     meta: {
                         title: "学科列表",
+                        rules: ["超级管理员", "管理员", "老师", "学生"],
+                        icon: "el-icon-notebook-2"
                     }
                 }
             ]
@@ -86,11 +99,23 @@ const router = new VueRouter({
 
 // 导入进度条插件
 import NProgress from 'nprogress';
-import 'nprogress/nprogress.css'
+import 'nprogress/nprogress.css';
+import store from '@/store/index.js';
+import { Message } from 'element-ui';
+import { removeToken } from '@/utils/token.js';
 router.beforeEach((to, from, next) => {
     // 进入前开始进度条动画
     NProgress.start();
-    next()
+    if (to.meta.rules.includes(store.state.role)) {
+        // 如果存在就通过 放行
+        next();
+    } else {
+        // 如果不通过 就 迁回登入页
+        Message.error("您权限不够 不能访问");
+        removeToken();
+        next("/")
+    }
+
 })
 router.afterEach((to) => {
     // 进入后/页面加载完毕 进度条动画结束

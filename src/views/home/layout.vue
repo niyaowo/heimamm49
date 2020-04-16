@@ -22,11 +22,17 @@
           class="transition"
           :collapse="collapse"
         >
-          <el-menu-item index="/home/chart">
-            <i class="el-icon-pie-chart"></i>
-            <span slot="title">数据概览</span>
+          <!-- 在Vue里面 v-for和v-show不能同时使用 -->
+          <el-menu-item
+            :index="'/home/'+item.path"
+            v-for="(item, index) in this.$router.options.routes[2].children"
+            :key="index"
+            v-show="item.meta.rules.includes($store.state.role)"
+          >
+            <i :class="item.meta.icon"></i>
+            <span slot="title">{{item.meta.title}}</span>
           </el-menu-item>
-          <el-menu-item index="/home/userList">
+          <!-- <el-menu-item index="/home/userList">
             <i class="el-icon-user"></i>
             <span slot="title">用户列表</span>
           </el-menu-item>
@@ -41,7 +47,7 @@
           <el-menu-item index="/home/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
-          </el-menu-item>
+          </el-menu-item>-->
         </el-menu>
       </el-aside>
       <el-main class="main">
@@ -86,13 +92,32 @@ export default {
       return;
     }
     // 修改网页标题
-    document.title = this.$route.meta.title;
+    // document.title = this.$route.meta.title;
     getUserInfo().then(res => {
       this.userInfo = res.data;
       // 用户图片头像
       res.data.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
       // 将数据保存到数据共享 Vuex
       this.$store.state.userInfo = this.userInfo;
+      // 获取角色信息
+      this.$store.state.role = res.data.role;
+      // 判断用户是否正常
+      if (res.data.status == 0) {
+        this.$message.error("您的账号被禁止使用！请联系管理员！");
+        // 清除token
+        removeToken();
+        // 跳转登入页
+        this.$router.push("/");
+      } else {
+        // 判断用户 是否可以访问改网页 识别是否 给予不同的权限
+        if (!this.$route.meta.rules.includes(res.data.role)) {
+          this.$message.error("您的权限不够 无法访问改页面");
+          // 清除token
+          removeToken();
+          // 跳转登入页
+          this.$router.push("/");
+        }
+      }
     });
   }
 };

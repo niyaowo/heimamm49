@@ -34,7 +34,7 @@
         </el-table-column>
         <el-table-column prop="eid" label="企业编号" width="180"></el-table-column>
         <el-table-column prop="name" label="企业名称"></el-table-column>
-        <el-table-column prop="intro" label="创建者"></el-table-column>
+        <el-table-column prop="username" label="创建者"></el-table-column>
         <el-table-column prop="create_time" label="创建日期"></el-table-column>
         <el-table-column label="状态" width="130">
           <template slot-scope="scope">
@@ -48,7 +48,7 @@
               @click="setStatus(scope.row.id)"
               :type="scope.row.status==1?'info':'success'"
             >{{scope.row.status==0?"启用":"禁用"}}</el-button>
-            <el-button type="danger" @click="remove(scope.row.id)">删除</el-button>
+            <el-button type="danger" @click="remove(scope.row.id)" v-if="$store.state.role!='老师'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -155,6 +155,7 @@ export default {
     },
     // 新增企业
     add() {
+      this.mode = "add";
       this.$refs.addB.form = {
         name: "",
         short_name: "",
@@ -167,9 +168,9 @@ export default {
     // 编辑企业
     edit(row) {
       // 传值给子组件
+      this.mode = "edit";
       this.$refs.addB.form = JSON.parse(JSON.stringify(row));
       this.$refs.addB.dialogVisible = true;
-      console.log(row);
     }
   },
   created() {

@@ -24,7 +24,7 @@
         <el-form-item class="search">
           <el-button type="primary" @click="search">搜索</el-button>
           <el-button @click="clearForm">清除</el-button>
-          <el-button type="primary" @click="add">+添加学科</el-button>
+          <el-button type="primary" @click="add" v-if="$store.state.role!='学生'">+添加学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -43,11 +43,16 @@
         <el-table-column label="状态" width="130">
           <template slot-scope="scope">{{scope.row.status==1?"启用":"禁用"}}</template>
         </el-table-column>
-        <el-table-column label="操作">
+        <!-- 如果用户是 学生身份就 隐藏按钮操作 true显示 false隐藏 -->
+        <el-table-column label="操作" v-if="$store.state.role!='学生'">
           <template slot-scope="scope">
             <el-button type="primary" @click="editData(scope.row)">编辑</el-button>
             <el-button @click="setStatus(scope.row.id)">{{scope.row.status==0?"启用":"禁用"}}</el-button>
-            <el-button type="danger" @click="removeData(scope.row.id)">删除</el-button>
+            <el-button
+              type="danger"
+              @click="removeData(scope.row.id)"
+              v-if="$store.state.role.includes('管理员')"
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>

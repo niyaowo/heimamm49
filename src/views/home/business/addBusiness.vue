@@ -3,7 +3,7 @@
     <!-- 对话框 -->
     <el-dialog :visible.sync="dialogVisible" width="30%" center>
       <!-- 标题 -->
-      <div class="title" slot="title">企业新增</div>
+      <div class="title" slot="title">{{mode=="add"?"企业新增":"企业编辑"}}</div>
       <!-- 主体表单 -->
       <el-form label-width="80px" :model="form" :rules="rules" ref="form">
         <el-form-item label="企业编号" prop="eid">
@@ -34,15 +34,15 @@
 <script>
 import { addBusiness, editBusiness } from "@/api/business.js";
 export default {
+  // 编辑/新增
+  props: {
+    mode: {
+      type: String,
+      default: "add"
+    }
+  },
   data() {
     return {
-      // 编辑/新增
-      props: {
-        mode: {
-          type: String,
-          default: "add"
-        }
-      },
       // 对话框显示与否
       dialogVisible: false,
       // 表单数据
