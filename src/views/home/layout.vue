@@ -15,7 +15,7 @@
     </el-header>
     <!-- 导航栏 -->
     <el-container>
-      <el-aside class="aside" width="auto">
+      <el-aside width="auto" class="aside">
         <el-menu
           :router="true"
           :default-active="$route.fullPath"

@@ -17,7 +17,7 @@ function setStatus(data) {
     })
 }
 
-// 删除数据
+// 删除题库
 function removeQuestionData(data) {
     return instance({
         url: "/question/remove",
@@ -36,13 +36,13 @@ function addQuestion(data) {
 }
 
 // 编辑题库
-function editSubject(data) {
+function editQuestion(data) {
     return instance({
-        url: "/subject/edit",
+        url: "/question/edit",
         method: "post",
         data
     })
 }
 
 // 导出请求
-export { getQusetionData, setStatus, removeQuestionData, addQuestion, editSubject };
+export { getQusetionData, setStatus, removeQuestionData, addQuestion, editQuestion };

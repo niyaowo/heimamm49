@@ -34,7 +34,8 @@ instance.interceptors.response.use(function (response) {
         return response.data;
     } else if (response.data.code == 206) {
         // token 报错处理  删除token 返回登录页
-        Message.error(response.data.message);
+        // Message.error(response.data.message);
+        Message.error("请求超时");
         router.push('/');
         removeToken();
         return Promise.reject("error");
